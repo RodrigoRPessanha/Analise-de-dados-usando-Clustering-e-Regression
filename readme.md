@@ -61,6 +61,46 @@ def preparar_dados_para_clustering(dados):
     # Retorna características padronizadas e classes reais (para avaliação)
 ```
 
+### 2.1. Análise Exploratória dos Dados
+
+A análise exploratória é uma etapa fundamental do processamento de dados que permite compreender melhor a natureza e as características do dataset de vinhos antes de aplicar os algoritmos de machine learning.
+
+#### Estatísticas Descritivas
+
+Análise das estatísticas básicas de cada atributo (média, desvio padrão, mínimo, máximo, etc.) para identificar outliers e entender a distribuição dos dados. O dataset de vinhos contém 178 amostras com 13 características contínuas, distribuídas em 3 classes de cultivares.
+
+#### Visualizações Implementadas
+
+1. **Matriz de Correlação** (`matriz_correlacao.png`)
+   - Permite identificar relações lineares entre os atributos
+   - Destaca características altamente correlacionadas que podem ser redundantes
+   - Ajuda na seleção de características relevantes para os modelos
+
+2. **Distribuição dos Atributos por Classe** (`distribuicao_atributos_por_classe.png`)
+   - Visualiza a distribuição de cada atributo químico separado por classe de vinho
+   - Identifica atributos discriminantes que podem separar bem as classes
+   - Revela padrões específicos de cada cultivar
+
+3. **Visualização PCA** (`pca_visualizacao.png`)
+   - Reduz a dimensionalidade dos dados para 2 componentes principais
+   - Facilita a visualização da separabilidade das classes no espaço bidimensional
+   - Mostra a variância explicada pelos componentes principais
+
+#### Preparação dos Dados
+
+Após a análise exploratória, os dados são preparados de formas específicas para cada tipo de algoritmo:
+
+1. **Para Clustering:**
+   - Remoção da coluna de classe (clustering não supervisionado)
+   - Padronização usando StandardScaler para equalizar a escala das características
+   - Armazenamento das classes reais para posterior avaliação dos algoritmos
+
+2. **Para Regressão:**
+   - Separação do teor de álcool como variável alvo
+   - Remoção da coluna de classe
+   - Divisão em conjuntos de treino e teste
+   - Normalização das características para algoritmos sensíveis à escala (SVM, KNN)
+
 ## 3. Algoritmos de Clustering
 
 ### 3.1. K-means (`kmeans.py`)

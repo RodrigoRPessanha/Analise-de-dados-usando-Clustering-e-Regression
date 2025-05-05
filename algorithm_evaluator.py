@@ -10,44 +10,56 @@ from sklearn.svm import SVR
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.cluster import KMeans, DBSCAN
 from sklearn.model_selection import cross_val_score
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
 from processar_dados import carregar_dados, preparar_dados_para_regressao, preparar_dados_para_clustering
 
 def avaliar_algoritmos_regressao():
     """
     Avalia e compara os três algoritmos de regressão linear:
     Decision Tree Regressor, SVM Regressor e KNN Regressor.
+    Utiliza pipelines para padronizar os dados automaticamente.
     """
     # Carregar os dados
     dados = carregar_dados()
     X, y = preparar_dados_para_regressao(dados)
     
-    # Definir os modelos com parâmetros otimizados (baseados na análise prévia)
-    modelos = {
-        'Decision Tree': DecisionTreeRegressor(max_depth=5, min_samples_leaf=1, min_samples_split=2, random_state=42),
-        'SVM': SVR(C=0.1, gamma='scale', kernel='linear'),  # Parâmetros atualizados para execução mais rápida
-        'KNN': KNeighborsRegressor(n_neighbors=5, p=2, weights='distance')
+    # Definir os modelos com pipelines para padronização automática
+    pipelines = {
+        'Decision Tree': Pipeline([
+            ('scaler', StandardScaler()),
+            ('regressor', DecisionTreeRegressor(max_depth=5, min_samples_leaf=1, min_samples_split=2, random_state=42))
+        ]),
+        'SVM': Pipeline([
+            ('scaler', StandardScaler()),
+            ('regressor', SVR(C=0.1, gamma='scale', kernel='linear'))
+        ]),
+        'KNN': Pipeline([
+            ('scaler', StandardScaler()),
+            ('regressor', KNeighborsRegressor(n_neighbors=5, p=2, weights='distance'))
+        ])
     }
     
     # Métricas para armazenar os resultados
     resultados = pd.DataFrame(
         columns=['Modelo', 'MSE (Validação Cruzada)', 'R² (Validação Cruzada)'],
-        index=range(len(modelos))
+        index=range(len(pipelines))
     )
     
     print("Avaliando algoritmos de regressão...")
     print("-" * 50)
     
     # Avaliar cada modelo
-    for i, (nome, modelo) in enumerate(modelos.items()):
+    for i, (nome, pipeline) in enumerate(pipelines.items()):
         # Calcular MSE com validação cruzada
         cv_scores_mse = cross_val_score(
-            modelo, X, y, cv=5, scoring='neg_mean_squared_error'
+            pipeline, X, y, cv=5, scoring='neg_mean_squared_error'
         )
         mse_cv = -cv_scores_mse.mean()
         
         # Calcular R² com validação cruzada
         cv_scores_r2 = cross_val_score(
-            modelo, X, y, cv=5, scoring='r2'
+            pipeline, X, y, cv=5, scoring='r2'
         )
         r2_cv = cv_scores_r2.mean()
         
